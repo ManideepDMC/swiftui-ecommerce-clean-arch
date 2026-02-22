@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>App Icon Generator</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    canvas {
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .download-btn {
+      margin-top: 24px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #FF6B35, #FF3CAC);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .download-btn:hover { transform: scale(1.05); }
+    h2 { color: #fff; margin-bottom: 20px; font-weight: 300; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <h2>App Icon Preview</h2>
+  <canvas id="icon" width="1024" height="1024"></canvas>
+  <button class="download-btn" onclick="downloadIcon()">Download 1024x1024 PNG</button>
+
+  <script>
+    const canvas = document.getElementById('icon');
+    const ctx = canvas.getContext('2d');
+    const W = 1024, H = 1024;
+
+    function drawIcon() {
+      // === BACKGROUND GRADIENT ===
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#1B7A3D');
+      bgGrad.addColorStop(0.5, '#2D9B4E');
+      bgGrad.addColorStop(1, '#45B649');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // === SUBTLE PATTERN (diagonal lines) ===
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      for (let i = -H; i < W + H; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + H, H);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // === SOFT CIRCULAR GLOW ===
+      const glow = ctx.createRadialGradient(W/2, H/2 + 40, 50, W/2, H/2 + 40, 420);
+      glow.addColorStop(0, 'rgba(255,255,255,0.12)');
+      glow.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+
+      // === SHOPPING BAG ===
+      const bagX = W/2, bagY = H/2 + 60;
+      const bagW = 340, bagH = 360;
+
+      // Bag shadow
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowBlur = 40;
+      ctx.shadowOffsetY = 15;
+
+      // Bag body
+      ctx.beginPath();
+      ctx.moveTo(bagX - bagW/2 + 20, bagY - bagH/2 + 60);
+      ctx.lineTo(bagX - bagW/2, bagY + bagH/2 - 30);
+      ctx.quadraticCurveTo(bagX - bagW/2, bagY + bagH/2, bagX - bagW/2 + 30, bagY + bagH/2);
+      ctx.lineTo(bagX + bagW/2 - 30, bagY + bagH/2);
+      ctx.quadraticCurveTo(bagX + bagW/2, bagY + bagH/2, bagX + bagW/2, bagY + bagH/2 - 30);
+      ctx.lineTo(bagX + bagW/2 - 20, bagY - bagH/2 + 60);
+      ctx.closePath();
+
+      const bagGrad = ctx.createLinearGradient(bagX - bagW/2, bagY, bagX + bagW/2, bagY);
+      bagGrad.addColorStop(0, '#FFFFFF');
+      bagGrad.addColorStop(0.5, '#F8F8F8');
+      bagGrad.addColorStop(1, '#EEEEEE');
+      ctx.fillStyle = bagGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Bag top fold
+      ctx.beginPath();
+      ctx.moveTo(bagX - bagW/2 + 20, bagY - bagH/2 + 60);
+      ctx.lineTo(bagX + bagW/2 - 20, bagY - bagH/2 + 60);
+      ctx.lineTo(bagX + bagW/2 - 10, bagY - bagH/2 + 30);
+      ctx.lineTo(bagX - bagW/2 + 10, bagY - bagH/2 + 30);
+      ctx.closePath();
+      ctx.fillStyle = '#E8E8E8';
+      ctx.fill();
+
+      // Bag handles
+      ctx.save();
+      ctx.strokeStyle = '#CCCCCC';
+      ctx.lineWidth = 12;
+      ctx.lineCap = 'round';
+
+      // Left handle
+      ctx.beginPath();
+      ctx.moveTo(bagX - 80, bagY - bagH/2 + 30);
+      ctx.quadraticCurveTo(bagX - 80, bagY - bagH/2 - 60, bagX - 20, bagY - bagH/2 - 60);
+      ctx.stroke();
+
+      // Right handle
+      ctx.beginPath();
+      ctx.moveTo(bagX + 80, bagY - bagH/2 + 30);
+      ctx.quadraticCurveTo(bagX + 80, bagY - bagH/2 - 60, bagX + 20, bagY - bagH/2 - 60);
+      ctx.stroke();
+      ctx.restore();
+
+      // === APPLE FRUIT (coming out of bag) ===
+      const appleX = bagX, appleY = bagY - 60;
+
+      // Apple body shadow
+      ctx.save();
+      ctx.shadowColor = 'rgba(180,0,0,0.2)';
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetY = 8;
+
+      // Apple body - two overlapping circles for the classic apple shape
+      ctx.beginPath();
+      ctx.moveTo(appleX, appleY - 80);
+      ctx.bezierCurveTo(appleX - 100, appleY - 80, appleX - 110, appleY + 10, appleX - 80, appleY + 60);
+      ctx.bezierCurveTo(appleX - 50, appleY + 110, appleX - 10, appleY + 100, appleX, appleY + 85);
+      ctx.bezierCurveTo(appleX + 10, appleY + 100, appleX + 50, appleY + 110, appleX + 80, appleY + 60);
+      ctx.bezierCurveTo(appleX + 110, appleY + 10, appleX + 100, appleY - 80, appleX, appleY - 80);
+
+      const appleGrad = ctx.createLinearGradient(appleX - 80, appleY - 80, appleX + 80, appleY + 100);
+      appleGrad.addColorStop(0, '#FF3B30');
+      appleGrad.addColorStop(0.3, '#FF2D55');
+      appleGrad.addColorStop(0.7, '#E8222A');
+      appleGrad.addColorStop(1, '#CC1A22');
+      ctx.fillStyle = appleGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Apple highlight
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(appleX - 35, appleY - 30, 30, 45, -0.3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.18)';
+      ctx.fill();
+      ctx.restore();
+
+      // Apple stem
+      ctx.save();
+      ctx.strokeStyle = '#5D3A1A';
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(appleX, appleY - 78);
+      ctx.quadraticCurveTo(appleX + 5, appleY - 105, appleX + 10, appleY - 115);
+      ctx.stroke();
+      ctx.restore();
+
+      // Apple leaf
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(appleX + 10, appleY - 105);
+      ctx.quadraticCurveTo(appleX + 55, appleY - 135, appleX + 65, appleY - 105);
+      ctx.quadraticCurveTo(appleX + 45, appleY - 100, appleX + 10, appleY - 105);
+      const leafGrad = ctx.createLinearGradient(appleX + 10, appleY - 135, appleX + 65, appleY - 100);
+      leafGrad.addColorStop(0, '#4CD964');
+      leafGrad.addColorStop(1, '#34C759');
+      ctx.fillStyle = leafGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // === SMALL DECORATIVE FRUITS ===
+
+      // Small orange (left)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(bagX - 120, bagY + 100, 40, 0, Math.PI * 2);
+      const orangeGrad = ctx.createRadialGradient(bagX - 130, bagY + 90, 5, bagX - 120, bagY + 100, 40);
+      orangeGrad.addColorStop(0, '#FFB347');
+      orangeGrad.addColorStop(1, '#FF8C00');
+      ctx.fillStyle = orangeGrad;
+      ctx.fill();
+      ctx.restore();
+
+      // Small grape cluster (right)
+      const grapeColors = ['#8E44AD', '#9B59B6', '#7D3C98'];
+      const grapePositions = [
+        [bagX + 100, bagY + 80],
+        [bagX + 130, bagY + 80],
+        [bagX + 85, bagY + 110],
+        [bagX + 115, bagY + 110],
+        [bagX + 145, bagY + 110],
+        [bagX + 100, bagY + 140],
+        [bagX + 130, bagY + 140],
+      ];
+      grapePositions.forEach((pos, i) => {
+        ctx.beginPath();
+        ctx.arc(pos[0], pos[1], 18, 0, Math.PI * 2);
+        const gGrad = ctx.createRadialGradient(pos[0] - 4, pos[1] - 4, 2, pos[0], pos[1], 18);
+        gGrad.addColorStop(0, '#BB6BD9');
+        gGrad.addColorStop(1, grapeColors[i % 3]);
+        ctx.fillStyle = gGrad;
+        ctx.fill();
+      });
+
+      // === BOTTOM TEXT BADGE ===
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.2)';
+      roundRect(ctx, bagX - 130, bagY + bagH/2 + 30, 260, 55, 27);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.font = 'bold 28px -apple-system, SF Pro Display, Helvetica';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('FRESH MARKET', bagX, bagY + bagH/2 + 58);
+      ctx.restore();
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function downloadIcon() {
+      const link = document.createElement('a');
+      link.download = 'AppIcon.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    drawIcon();
+  </script>
+</body>
+</html>
